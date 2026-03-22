@@ -20,7 +20,7 @@ export default function CostStructureChart({ data }) {
       {
         label: '고정비',
         data: data.map((d) => d.고정비실적),
-        backgroundColor: 'rgba(239,68,68,0.75)',
+        backgroundColor: 'rgba(99,110,140,0.7)',
         borderRadius: 4,
         borderSkipped: false,
         stack: 'stack',
@@ -30,7 +30,7 @@ export default function CostStructureChart({ data }) {
         data: data.map(
           (d) => d.매입비실적 + d.영업수수료실적 + d.omp수수료실적
         ),
-        backgroundColor: 'rgba(251,146,60,0.75)',
+        backgroundColor: 'rgba(88,166,255,0.75)',
         borderRadius: 4,
         borderSkipped: false,
         stack: 'stack',
@@ -42,7 +42,7 @@ export default function CostStructureChart({ data }) {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { labels: { color: '#9ca3af', font: { size: 12 } } },
+      legend: { labels: { color: '#7d8590', font: { size: 12 } } },
       tooltip: {
         callbacks: {
           label: (ctx) => ` ${ctx.dataset.label}: ${ctx.parsed.y}억원`,
@@ -50,18 +50,18 @@ export default function CostStructureChart({ data }) {
       },
     },
     scales: {
-      x: { stacked: true, ticks: { color: '#6b7280' }, grid: { color: '#1f2937' } },
+      x: { stacked: true, ticks: { color: '#484f58' }, grid: { color: '#21262d' } },
       y: {
         stacked: true,
-        ticks: { color: '#6b7280', callback: (v) => `${v}억` },
-        grid: { color: '#1f2937' },
+        ticks: { color: '#484f58', callback: (v) => `${v}억` },
+        grid: { color: '#21262d' },
       },
     },
   };
 
   return (
-    <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5 shadow-lg">
-      <h3 className="text-sm font-semibold text-gray-300 mb-4">비용 구조 (고정비 / 변동비)</h3>
+    <div className="bg-[#161b22] border border-[#21262d] rounded-xl p-5">
+      <h3 className="text-sm font-semibold text-[#8b949e] mb-4">비용 구조 (고정비 / 변동비)</h3>
       <div className="h-56">
         <Bar data={chartData} options={options} />
       </div>

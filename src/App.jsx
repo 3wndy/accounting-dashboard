@@ -10,6 +10,8 @@ import LinkedCostChart from './components/charts/LinkedCostChart';
 import ProfitChart from './components/charts/ProfitChart';
 import CostTable from './components/CostTable';
 import DivisionTable from './components/DivisionTable';
+import ProjectProfitTable from './components/ProjectProfitTable';
+import ProjectWorkforceChart from './components/ProjectWorkforceChart';
 
 function loadDefaultData() {
   const result = Papa.parse(SAMPLE_CSV, { header: true, skipEmptyLines: true });
@@ -29,12 +31,12 @@ export default function App() {
   const profitPositive = kpis.영업이익실적 >= kpis.영업이익계획;
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-white">
+    <div className="min-h-screen bg-[#0d1117] text-[#e6edf3]">
       {/* Header */}
-      <header className="border-b border-[#1f1f1f] px-6 py-4 flex items-center justify-between">
+      <header className="border-b border-[#21262d] px-6 py-4 flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold tracking-tight">관리회계 대시보드</h1>
-          <p className="text-xs text-gray-500 mt-0.5">Management Accounting Dashboard · 단위: 억원</p>
+          <p className="text-xs text-[#7d8590] mt-0.5">Management Accounting Dashboard · 단위: 억원</p>
         </div>
         <FileUpload onDataLoad={setAllData} />
       </header>
@@ -43,7 +45,7 @@ export default function App() {
         {/* Tab Filter */}
         <div className="flex items-center justify-between">
           <TabFilter active={activeTab} onChange={setActiveTab} />
-          <span className="text-xs text-gray-600">
+          <span className="text-xs text-[#484f58]">
             {activeTab === '연간' ? '전체 분기 합산' : `${activeTab} 단독 현황`}
           </span>
         </div>
@@ -93,6 +95,12 @@ export default function App() {
           <CostTable data={agg} />
           <DivisionTable data={filtered} />
         </div>
+
+        {/* Project P&L Table */}
+        <ProjectProfitTable />
+
+        {/* Project Workforce */}
+        <ProjectWorkforceChart />
       </main>
     </div>
   );

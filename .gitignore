@@ -29,3 +29,5 @@ yarn-error.log*
 
 # Temp server file
 server.cjs
+
+.vercel
