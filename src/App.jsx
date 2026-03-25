@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Papa from 'papaparse';
 import { SAMPLE_CSV, parseCSVData, filterData, aggregateData, calcKPIs } from './utils/dataUtils';
 import KPICard from './components/KPICard';
-import TabFilter from './components/TabFilter';
+import PeriodFilter from './components/PeriodFilter';
 import FileUpload from './components/FileUpload';
 import SalesChart from './components/charts/SalesChart';
 import CostStructureChart from './components/charts/CostStructureChart';
@@ -20,9 +20,10 @@ function loadDefaultData() {
 
 export default function App() {
   const [allData, setAllData] = useState(loadDefaultData);
-  const [activeTab, setActiveTab] = useState('연간');
+  const [activeYear, setActiveYear] = useState(2025);
+  const [activeQuarter, setActiveQuarter] = useState('연간');
 
-  const filtered = filterData(allData, activeTab);
+  const filtered = filterData(allData, activeQuarter, activeYear);
   const agg = aggregateData(filtered);
   const kpis = calcKPIs(agg);
 
@@ -42,11 +43,16 @@ export default function App() {
       </header>
 
       <main className="px-6 py-6 space-y-6 max-w-[1600px] mx-auto">
-        {/* Tab Filter */}
+        {/* Period Filter */}
         <div className="flex items-center justify-between">
-          <TabFilter active={activeTab} onChange={setActiveTab} />
+          <PeriodFilter
+            year={activeYear}
+            quarter={activeQuarter}
+            onYearChange={setActiveYear}
+            onQuarterChange={setActiveQuarter}
+          />
           <span className="text-xs text-[#484f58]">
-            {activeTab === '연간' ? '전체 분기 합산' : `${activeTab} 단독 현황`}
+            {activeYear}년 · {activeQuarter === '연간' ? '전체 분기 합산' : `${activeQuarter} 단독 현황`}
           </span>
         </div>
 

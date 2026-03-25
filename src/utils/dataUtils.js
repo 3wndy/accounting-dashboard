@@ -1,11 +1,20 @@
-export const SAMPLE_CSV = `분기,매출계획,매출실적,고정비계획,고정비실적,매입비계획,매입비실적,영업수수료계획,영업수수료실적,omp수수료계획,omp수수료실적
-Q1,130,138,56,58,28,31,12,13,8,9
-Q2,145,148,60,61,31,33,14,14,9,10
-Q3,155,150,62,63,33,32,15,14,10,10
-Q4,170,182,65,68,36,40,16,17,11,12`;
+export const SAMPLE_CSV = `연도,분기,매출계획,매출실적,고정비계획,고정비실적,매입비계획,매입비실적,영업수수료계획,영업수수료실적,omp수수료계획,omp수수료실적
+2024,Q1,120,125,52,54,25,27,11,12,7,8
+2024,Q2,135,140,57,58,28,30,13,13,8,9
+2024,Q3,145,142,60,61,30,29,14,13,9,9
+2024,Q4,160,170,63,65,34,37,15,16,10,11
+2025,Q1,130,138,56,58,28,31,12,13,8,9
+2025,Q2,145,148,60,61,31,33,14,14,9,10
+2025,Q3,155,150,62,63,33,32,15,14,10,10
+2025,Q4,170,182,65,68,36,40,16,17,11,12
+2026,Q1,140,148,58,60,30,33,13,14,9,10
+2026,Q2,158,162,63,64,33,35,15,15,10,11
+2026,Q3,168,165,66,67,35,34,16,15,11,11
+2026,Q4,185,198,70,72,38,42,17,18,12,13`;
 
 export function parseCSVData(rows) {
   return rows.map((row) => ({
+    연도: row['연도'] ? parseInt(row['연도']) : null,
     분기: row['분기'],
     매출계획: parseFloat(row['매출계획']) || 0,
     매출실적: parseFloat(row['매출실적']) || 0,
@@ -20,9 +29,14 @@ export function parseCSVData(rows) {
   }));
 }
 
-export function filterData(data, tab) {
-  if (tab === '연간') return data;
-  return data.filter((d) => d.분기 === tab);
+export function filterData(data, quarter, year) {
+  let result = data;
+  // 연도 컬럼이 있는 데이터만 연도 필터 적용
+  if (year && result.some((d) => d.연도 !== null)) {
+    result = result.filter((d) => d.연도 === null || d.연도 === year);
+  }
+  if (quarter === '연간') return result;
+  return result.filter((d) => d.분기 === quarter);
 }
 
 export function aggregateData(data) {
