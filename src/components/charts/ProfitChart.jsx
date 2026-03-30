@@ -23,7 +23,7 @@ ChartJS.register(
 );
 
 export default function ProfitChart({ data }) {
-  const labels = data.map((d) => d.분기);
+  const labels = data.map((d) => d.label || d.분기);
 
   const profitPlan = data.map(
     (d) =>

@@ -29,6 +29,41 @@ export function parseCSVData(rows) {
   }));
 }
 
+export function filterByRange(data, startYear, endYear) {
+  if (!startYear && !endYear) return data;
+  return data.filter((d) => {
+    if (d.연도 === null) return true;
+    return d.연도 >= startYear && d.연도 <= endYear;
+  });
+}
+
+const FIELD_KEYS = [
+  '매출계획','매출실적','고정비계획','고정비실적',
+  '매입비계획','매입비실적','영업수수료계획','영업수수료실적',
+  'omp수수료계획','omp수수료실적',
+];
+
+export function buildChartRows(rangeData, quarter) {
+  const sum = (rows, key) => rows.reduce((acc, d) => acc + (d[key] || 0), 0);
+
+  if (quarter === '연간') {
+    const years = [...new Set(rangeData.map((d) => d.연도))].filter(Boolean).sort((a, b) => a - b);
+    return years.map((year) => {
+      const rows = rangeData.filter((d) => d.연도 === year);
+      const result = { label: `${year}년`, 연도: year, 분기: '연간' };
+      FIELD_KEYS.forEach((k) => { result[k] = sum(rows, k); });
+      return result;
+    });
+  }
+
+  // 분기 모드: 기간 내 모든 연도의 분기 데이터를 펼쳐서 표시
+  const QUARTER_ORDER = { Q1: 1, Q2: 2, Q3: 3, Q4: 4 };
+  return rangeData
+    .filter((d) => d.분기 && d.분기 !== '연간')
+    .sort((a, b) => a.연도 - b.연도 || (QUARTER_ORDER[a.분기] || 0) - (QUARTER_ORDER[b.분기] || 0))
+    .map((d) => ({ ...d, label: `${d.연도} ${d.분기}` }));
+}
+
 export function filterData(data, quarter, year) {
   let result = data;
   // 연도 컬럼이 있는 데이터만 연도 필터 적용

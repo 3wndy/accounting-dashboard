@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Papa from 'papaparse';
-import { SAMPLE_CSV, parseCSVData, filterData, aggregateData, calcKPIs } from './utils/dataUtils';
+import { SAMPLE_CSV, parseCSVData, filterByRange, buildChartRows, aggregateData, calcKPIs } from './utils/dataUtils';
 import KPICard from './components/KPICard';
 import PeriodFilter from './components/PeriodFilter';
 import FileUpload from './components/FileUpload';
@@ -20,16 +20,25 @@ function loadDefaultData() {
 
 export default function App() {
   const [allData, setAllData] = useState(loadDefaultData);
-  const [activeYear, setActiveYear] = useState(2025);
+  const [startYear, setStartYear] = useState(2024);
+  const [endYear, setEndYear] = useState(2026);
   const [activeQuarter, setActiveQuarter] = useState('연간');
 
-  const filtered = filterData(allData, activeQuarter, activeYear);
-  const agg = aggregateData(filtered);
-  const kpis = calcKPIs(agg);
+  const rangeData = filterByRange(allData, startYear, endYear);
+  // KPI 집계: 연간=전체합산, 분기=모든 분기 합산(동일)
+  const rangeFiltered = rangeData;
+  const rangeAgg = aggregateData(rangeFiltered);
+  const kpis = calcKPIs(rangeAgg);
+
+  const chartRows = buildChartRows(rangeData, activeQuarter);
 
   const salesPositive = kpis.달성률 >= 100;
   const costPositive = kpis.매출연계비용실적 <= kpis.매출연계비용계획;
   const profitPositive = kpis.영업이익실적 >= kpis.영업이익계획;
+
+  const periodLabel = startYear === endYear
+    ? `${startYear}년`
+    : `${startYear}년 ~ ${endYear}년`;
 
   return (
     <div className="min-h-screen bg-[#0d1117] text-[#e6edf3]">
@@ -42,19 +51,24 @@ export default function App() {
         <FileUpload onDataLoad={setAllData} />
       </header>
 
-      <main className="px-6 py-6 space-y-6 max-w-[1600px] mx-auto">
-        {/* Period Filter */}
-        <div className="flex items-center justify-between">
+      {/* Sticky Period Filter Bar */}
+      <div className="sticky top-0 z-30 bg-[#0d1117]/90 backdrop-blur-sm border-b border-[#21262d] px-6 py-3">
+        <div className="max-w-[1600px] mx-auto flex items-center justify-between">
           <PeriodFilter
-            year={activeYear}
+            startYear={startYear}
+            endYear={endYear}
             quarter={activeQuarter}
-            onYearChange={setActiveYear}
+            onStartYearChange={setStartYear}
+            onEndYearChange={setEndYear}
             onQuarterChange={setActiveQuarter}
           />
           <span className="text-xs text-[#484f58]">
-            {activeYear}년 · {activeQuarter === '연간' ? '전체 분기 합산' : `${activeQuarter} 단독 현황`}
+            {periodLabel} · {activeQuarter === '연간' ? '전체 분기 합산' : '분기 단독 현황'}
           </span>
         </div>
+      </div>
+
+      <main className="px-6 py-6 space-y-6 max-w-[1600px] mx-auto">
 
         {/* KPI Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -90,16 +104,16 @@ export default function App() {
 
         {/* Charts - 2x2 grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <SalesChart data={filtered} />
-          <CostStructureChart data={filtered} />
-          <LinkedCostChart data={filtered} />
-          <ProfitChart data={filtered} />
+          <SalesChart data={chartRows} />
+          <CostStructureChart data={chartRows} />
+          <LinkedCostChart data={chartRows} />
+          <ProfitChart data={chartRows} />
         </div>
 
         {/* Tables */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <CostTable data={agg} />
-          <DivisionTable data={filtered} />
+          <CostTable data={rangeAgg} />
+          <DivisionTable data={chartRows} />
         </div>
 
         {/* Project P&L Table */}

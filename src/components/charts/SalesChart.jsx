@@ -12,7 +12,7 @@ import { Bar } from 'react-chartjs-2';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export default function SalesChart({ data }) {
-  const labels = data.map((d) => d.분기);
+  const labels = data.map((d) => d.label || d.분기);
 
   const chartData = {
     labels,

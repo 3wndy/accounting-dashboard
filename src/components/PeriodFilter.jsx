@@ -1,27 +1,39 @@
-const QUARTERS = ['연간', 'Q1', 'Q2', 'Q3', 'Q4'];
-const MIN_YEAR = 2020;
-const MAX_YEAR = 2030;
+const QUARTERS = ['연간', '분기'];
+const YEARS = Array.from({ length: 11 }, (_, i) => 2020 + i);
 
-export default function PeriodFilter({ year, quarter, onYearChange, onQuarterChange }) {
+export default function PeriodFilter({ startYear, endYear, quarter, onStartYearChange, onEndYearChange, onQuarterChange }) {
   return (
-    <div className="flex items-center gap-3">
-      {/* Year selector */}
-      <div className="flex items-center gap-1 bg-[#161b22] border border-[#21262d] rounded-xl px-3 py-1">
-        <button
-          onClick={() => onYearChange(Math.max(MIN_YEAR, year - 1))}
-          disabled={year <= MIN_YEAR}
-          className="w-6 h-6 flex items-center justify-center text-[#7d8590] hover:text-[#e6edf3] disabled:opacity-30 disabled:cursor-not-allowed transition-colors rounded"
+    <div className="flex items-center gap-3 flex-wrap">
+      {/* Range selector */}
+      <div className="flex items-center gap-2 bg-[#161b22] border border-[#21262d] rounded-xl px-3 py-1.5">
+        <span className="text-xs text-[#7d8590] font-medium mr-1">기간</span>
+        <select
+          value={startYear}
+          onChange={(e) => {
+            const val = parseInt(e.target.value);
+            onStartYearChange(val);
+            if (val > endYear) onEndYearChange(val);
+          }}
+          className="bg-transparent text-[#e6edf3] text-sm font-semibold focus:outline-none cursor-pointer"
         >
-          ‹
-        </button>
-        <span className="text-sm font-semibold text-[#e6edf3] w-12 text-center">{year}</span>
-        <button
-          onClick={() => onYearChange(Math.min(MAX_YEAR, year + 1))}
-          disabled={year >= MAX_YEAR}
-          className="w-6 h-6 flex items-center justify-center text-[#7d8590] hover:text-[#e6edf3] disabled:opacity-30 disabled:cursor-not-allowed transition-colors rounded"
+          {YEARS.map((y) => (
+            <option key={y} value={y} className="bg-[#161b22]">{y}년</option>
+          ))}
+        </select>
+        <span className="text-[#484f58] text-xs font-semibold">~</span>
+        <select
+          value={endYear}
+          onChange={(e) => {
+            const val = parseInt(e.target.value);
+            onEndYearChange(val);
+            if (val < startYear) onStartYearChange(val);
+          }}
+          className="bg-transparent text-[#e6edf3] text-sm font-semibold focus:outline-none cursor-pointer"
         >
-          ›
-        </button>
+          {YEARS.map((y) => (
+            <option key={y} value={y} className="bg-[#161b22]">{y}년</option>
+          ))}
+        </select>
       </div>
 
       {/* Quarter selector */}

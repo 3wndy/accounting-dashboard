@@ -34,18 +34,18 @@ export default function DivisionTable({ data }) {
     }
   );
 
-  const rows = [...data, { 분기: '합계', ...totals }];
+  const rows = [...data, { label: '합계', 분기: '합계', ...totals }];
 
   return (
     <div className="bg-[#161b22] border border-[#21262d] rounded-xl overflow-hidden">
       <div className="px-5 py-4 border-b border-[#21262d]">
-        <h3 className="text-sm font-semibold text-[#8b949e]">분기별 현황</h3>
+        <h3 className="text-sm font-semibold text-[#8b949e]">기간별 현황</h3>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#21262d]">
-              <th className="px-4 py-3 text-left text-xs font-semibold text-[#484f58] uppercase tracking-wider">분기</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-[#484f58] uppercase tracking-wider">기간</th>
               <th className="px-4 py-3 text-right text-xs font-semibold text-[#484f58]">매출계획</th>
               <th className="px-4 py-3 text-right text-xs font-semibold text-[#484f58]">매출실적</th>
               <th className="px-4 py-3 text-right text-xs font-semibold text-[#484f58]">달성률</th>
@@ -57,7 +57,7 @@ export default function DivisionTable({ data }) {
           </thead>
           <tbody className="divide-y divide-[#21262d]">
             {rows.map((d, i) => {
-              const isTotal = d.분기 === '합계';
+              const isTotal = d.label === '합계';
               const 수수료실적 = d.영업수수료실적 + d.omp수수료실적;
               const 총비용실적 = d.고정비실적 + d.매입비실적 + 수수료실적;
               const 영업이익 = d.매출실적 - 총비용실적;
@@ -71,7 +71,7 @@ export default function DivisionTable({ data }) {
                   }
                 >
                   <td className={`px-4 py-2.5 font-semibold ${isTotal ? 'text-[#e6edf3]' : 'text-[#adbac7]'}`}>
-                    {d.분기}
+                    {d.label || d.분기}
                   </td>
                   <td className="px-4 py-2.5 text-right text-[#7d8590]">{fmt(d.매출계획)}</td>
                   <td className="px-4 py-2.5 text-right text-[#e6edf3]">{fmt(d.매출실적)}</td>
