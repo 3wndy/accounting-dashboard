@@ -175,6 +175,34 @@ export const PROJECT_WORKFORCE_DATA = [
   },
 ];
 
+export const PROJECT_CATEGORIES = ['전체', '서비스', '협업', 'SDK', 'Web Office', '아틀라시안', '보안', '기타'];
+
+const CATEGORY_PROPORTIONS = {
+  '서비스': 0.30,
+  '협업': 0.20,
+  'SDK': 0.15,
+  'Web Office': 0.13,
+  '아틀라시안': 0.08,
+  '보안': 0.08,
+  '기타': 0.06,
+};
+
+const NUMERIC_FIELDS = [
+  '매출계획','매출실적','고정비계획','고정비실적',
+  '매입비계획','매입비실적','영업수수료계획','영업수수료실적',
+  'omp수수료계획','omp수수료실적',
+];
+
+export function getCategoryData(allData, category) {
+  if (category === '전체') return allData;
+  const ratio = CATEGORY_PROPORTIONS[category] ?? 0;
+  return allData.map((row) => {
+    const result = { ...row };
+    NUMERIC_FIELDS.forEach((f) => { result[f] = Math.round((row[f] || 0) * ratio); });
+    return result;
+  });
+}
+
 export function downloadSampleCSV() {
   const blob = new Blob([SAMPLE_CSV], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);

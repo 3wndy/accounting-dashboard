@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Papa from 'papaparse';
-import { SAMPLE_CSV, parseCSVData, filterByRange, buildChartRows, aggregateData, calcKPIs } from './utils/dataUtils';
+import { SAMPLE_CSV, parseCSVData, filterByRange, buildChartRows, aggregateData, calcKPIs, getCategoryData } from './utils/dataUtils';
+import ProjectCategoryFilter from './components/ProjectCategoryFilter';
 import KPICard from './components/KPICard';
 import PeriodFilter from './components/PeriodFilter';
 import FileUpload from './components/FileUpload';
@@ -23,8 +24,10 @@ export default function App() {
   const [startYear, setStartYear] = useState(2024);
   const [endYear, setEndYear] = useState(2026);
   const [activeQuarter, setActiveQuarter] = useState('연간');
+  const [activeCategory, setActiveCategory] = useState('전체');
 
-  const rangeData = filterByRange(allData, startYear, endYear);
+  const categoryData = getCategoryData(allData, activeCategory);
+  const rangeData = filterByRange(categoryData, startYear, endYear);
   // KPI 집계: 연간=전체합산, 분기=모든 분기 합산(동일)
   const rangeFiltered = rangeData;
   const rangeAgg = aggregateData(rangeFiltered);
@@ -53,18 +56,21 @@ export default function App() {
 
       {/* Sticky Period Filter Bar */}
       <div className="sticky top-0 z-30 bg-[#0d1117]/90 backdrop-blur-sm border-b border-[#21262d] px-6 py-3">
-        <div className="max-w-[1600px] mx-auto flex items-center justify-between">
-          <PeriodFilter
-            startYear={startYear}
-            endYear={endYear}
-            quarter={activeQuarter}
-            onStartYearChange={setStartYear}
-            onEndYearChange={setEndYear}
-            onQuarterChange={setActiveQuarter}
-          />
-          <span className="text-xs text-[#484f58]">
-            {periodLabel} · {activeQuarter === '연간' ? '전체 분기 합산' : '분기 단독 현황'}
-          </span>
+        <div className="max-w-[1600px] mx-auto space-y-2">
+          <div className="flex items-center justify-between">
+            <PeriodFilter
+              startYear={startYear}
+              endYear={endYear}
+              quarter={activeQuarter}
+              onStartYearChange={setStartYear}
+              onEndYearChange={setEndYear}
+              onQuarterChange={setActiveQuarter}
+            />
+            <span className="text-xs text-[#484f58]">
+              {periodLabel} · {activeQuarter === '연간' ? '전체 분기 합산' : '분기 단독 현황'}
+            </span>
+          </div>
+          <ProjectCategoryFilter active={activeCategory} onChange={setActiveCategory} />
         </div>
       </div>
 
